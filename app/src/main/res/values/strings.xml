@@ -2,4 +2,6 @@
   <string name="app_name">TTPTwitterBuild</string>
   <string name="iv_profile_pic_desc">twitter profile pictures</string>
   <string name="groups">Groups</string>
+  <string name="nav_home">Home</string>
+  <string name="gototweets">goToTweets</string>
 </resources>

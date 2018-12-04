@@ -2,6 +2,7 @@ package nyc.pursuit.ttptwitterbuild;
 
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
@@ -19,6 +20,7 @@ import com.twitter.sdk.android.core.TwitterConfig;
 import com.twitter.sdk.android.core.TwitterCore;
 import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.services.SearchService;
+import nyc.pursuit.ttptwitterbuild.fragments.HashTagGroupsFragment;
 import nyc.pursuit.ttptwitterbuild.fragments.TimeLineFragment;
 import nyc.pursuit.ttptwitterbuild.utils.GPSTracker;
 import okhttp3.OkHttpClient;
@@ -103,10 +105,32 @@ public class MainActivity extends AppCompatActivity
   }
 
   @Override public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+    selectDrawerItem(menuItem);
+    return true;
+  }
+
+  private void selectDrawerItem(MenuItem menuItem) {
+    Fragment fragment = null;
+    Class fragmentClass;
+    if (menuItem.getItemId() == R.id.nav_groups) {
+      fragmentClass = HashTagGroupsFragment.class;
+    } else {
+      fragmentClass = TimeLineFragment.class;
+    }
+
+    try {
+      fragment = (Fragment) fragmentClass.newInstance();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+
+    FragmentManager fragmentManager = getSupportFragmentManager();
+    fragmentManager.beginTransaction().replace(R.id.container_main, fragment).commit();
+
+
 
     menuItem.setChecked(true);
     drawerLayout.closeDrawers();
-    return true;
   }
 
   @Override public boolean onOptionsItemSelected(MenuItem item) {

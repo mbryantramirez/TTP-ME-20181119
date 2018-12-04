@@ -31,6 +31,7 @@ public class TimeLineFragment extends Fragment {
   private TweetAdapter tweetAdapter;
   private View timelineView;
   private static final String TAG = "TWITTER";
+  String hashTagFilter;
 
   @Nullable @Override
   public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -54,8 +55,14 @@ public class TimeLineFragment extends Fragment {
 
     Geocode geocode = new Geocode(latitude, longitude, 5, Geocode.Distance.MILES);
 
+    String query = "";
+
+    if (hashTagFilter != null) {
+      query = hashTagFilter;
+    }
+
     Call<Search> call =
-        searchService.tweets("q", geocode, null, null, null, 20, null, null, null, null);
+        searchService.tweets(query, geocode, null, null, null, 20, null, null, null, null);
     call.enqueue(new Callback<Search>() {
       @Override public void onResponse(Call<Search> call, Response<Search> response) {
         List<Tweet> tweets = response.body().tweets;
@@ -68,5 +75,9 @@ public class TimeLineFragment extends Fragment {
 
       }
     });
+  }
+
+  public void setFilter(String text) {
+    hashTagFilter = text;
   }
 }
