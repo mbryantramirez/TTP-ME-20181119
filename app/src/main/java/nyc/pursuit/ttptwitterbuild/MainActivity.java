@@ -1,18 +1,17 @@
 package nyc.pursuit.ttptwitterbuild;
 
-import android.content.res.Resources;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.TransitionDrawable;
+import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
+import android.view.MenuItem;
 import com.twitter.sdk.android.core.DefaultLogger;
 import com.twitter.sdk.android.core.Twitter;
 import com.twitter.sdk.android.core.TwitterApiClient;
@@ -20,44 +19,50 @@ import com.twitter.sdk.android.core.TwitterAuthConfig;
 import com.twitter.sdk.android.core.TwitterConfig;
 import com.twitter.sdk.android.core.TwitterCore;
 import com.twitter.sdk.android.core.TwitterSession;
-import com.twitter.sdk.android.core.models.Search;
-import com.twitter.sdk.android.core.models.Tweet;
 import com.twitter.sdk.android.core.services.SearchService;
-import com.twitter.sdk.android.core.services.params.Geocode;
-import java.util.List;
-import nyc.pursuit.ttptwitterbuild.adapters.TweetAdapter;
+import nyc.pursuit.ttptwitterbuild.fragments.HashTagGroupsFragment;
+import nyc.pursuit.ttptwitterbuild.fragments.TimeLineFragment;
 import nyc.pursuit.ttptwitterbuild.utils.GPSTracker;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity
+    implements NavigationView.OnNavigationItemSelectedListener {
 
-  private static final String TAG = "TWITTER";
+  private static final String TAG = "GPS";
   public static SearchService searchService;
-  private RecyclerView tweetRecyclerView;
-  private TweetAdapter tweetAdapter;
-  public Double currentLat;
-  public Double currentLong;
+  public static Double currentLat;
+  public static Double currentLong;
+  private DrawerLayout drawerLayout;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
-    init();
+    initDrawer();
     initTwitter();
     getGPSLocation();
-    getTweets(currentLat, currentLong);
+    initFragment();
   }
 
-  private void init() {
-    tweetRecyclerView = findViewById(R.id.rv_tweets);
-    LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-    tweetRecyclerView.setLayoutManager(linearLayoutManager);
-    tweetAdapter = new TweetAdapter();
-    tweetRecyclerView.setAdapter(tweetAdapter);
+  private void initFragment() {
+    FragmentManager manager = getSupportFragmentManager();
+    FragmentTransaction transaction = manager.beginTransaction();
+    TimeLineFragment timeLineFragment = new TimeLineFragment();
+    transaction.add(R.id.container_main, timeLineFragment, "main_feed");
+    transaction.addToBackStack(null);
+    transaction.commit();
+  }
+
+  private void initDrawer() {
+    drawerLayout = findViewById(R.id.drawer_layout);
+    NavigationView navigationView = findViewById(R.id.nav_view);
+    android.support.v7.widget.Toolbar toolbar = findViewById(R.id.toolbar);
+    setSupportActionBar(toolbar);
+    ActionBar actionBar = getSupportActionBar();
+    actionBar.setDisplayHomeAsUpEnabled(true);
+    actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_black_24dp);
+    navigationView.setNavigationItemSelectedListener(this);
   }
 
   private void initTwitter() {
@@ -99,23 +104,41 @@ public class MainActivity extends AppCompatActivity {
     return TwitterCore.getInstance().getGuestApiClient().getSearchService();
   }
 
-  public void getTweets(double latitude, double longitude) {
+  @Override public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+    selectDrawerItem(menuItem);
+    return true;
+  }
 
-    Geocode geocode = new Geocode(latitude, longitude, 5, Geocode.Distance.MILES);
+  private void selectDrawerItem(MenuItem menuItem) {
+    Fragment fragment = null;
+    Class fragmentClass;
+    if (menuItem.getItemId() == R.id.nav_groups) {
+      fragmentClass = HashTagGroupsFragment.class;
+    } else {
+      fragmentClass = TimeLineFragment.class;
+    }
 
-    Call<Search> call =
-        searchService.tweets("q", geocode, null, null, null, 20, null, null, null, null);
-    call.enqueue(new Callback<Search>() {
-      @Override public void onResponse(Call<Search> call, Response<Search> response) {
-        List<Tweet> tweets = response.body().tweets;
-        Log.e(TAG, String.valueOf(tweets.size()));
-        tweetAdapter.updateTweets(tweets);
-        tweetAdapter.notifyDataSetChanged();
-      }
+    try {
+      fragment = (Fragment) fragmentClass.newInstance();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
 
-      @Override public void onFailure(Call<Search> call, Throwable t) {
+    FragmentManager fragmentManager = getSupportFragmentManager();
+    fragmentManager.beginTransaction().replace(R.id.container_main, fragment).commit();
 
-      }
-    });
+
+
+    menuItem.setChecked(true);
+    drawerLayout.closeDrawers();
+  }
+
+  @Override public boolean onOptionsItemSelected(MenuItem item) {
+    switch (item.getItemId()) {
+      case android.R.id.home:
+        drawerLayout.openDrawer(GravityCompat.START);
+        return true;
+    }
+    return super.onOptionsItemSelected(item);
   }
 }
