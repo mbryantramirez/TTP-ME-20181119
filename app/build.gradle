@@ -1,0 +1,53 @@
+apply plugin: 'com.android.application'
+
+android {
+  compileSdkVersion 28
+  defaultConfig {
+    applicationId "nyc.pursuit.ttptwitterbuild"
+    minSdkVersion 20
+    targetSdkVersion 28
+    versionCode 1
+    versionName "1.0"
+    testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+  }
+  compileOptions {
+    sourceCompatibility 1.8
+    targetCompatibility 1.8
+  }
+  buildTypes {
+    debug {
+      buildConfigField 'String', "ConsumerKey", Twitter_Consumer_Key
+      resValue 'string', "twitter_consumer_key", Twitter_Consumer_Key
+      buildConfigField 'String', "SecretKey", Twitter_Secret_Key
+      resValue 'string', "twitter_secret_key", Twitter_Secret_Key
+    }
+    release {
+      minifyEnabled false
+      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+      buildConfigField 'String', "ConsumerKey", Twitter_Consumer_Key
+      resValue 'string', "twitter_consumer_key", Twitter_Consumer_Key
+      buildConfigField 'String', "SecretKey", Twitter_Secret_Key
+      resValue 'string', "twitter_secret_key", Twitter_Secret_Key
+    }
+  }
+}
+
+dependencies {
+  implementation fileTree(dir: 'libs', include: ['*.jar'])
+  implementation 'com.android.support:appcompat-v7:28.0.0'
+  implementation 'com.android.support.constraint:constraint-layout:1.1.3'
+  implementation 'com.android.support:cardview-v7:28.0.0'
+  implementation 'com.android.support:gridlayout-v7:28.0.0'
+  implementation 'com.android.support:recyclerview-v7:28.0.0'
+  implementation 'com.android.support:design:28.0.0'
+  implementation 'com.android.support:exifinterface:28.0.0'
+  implementation 'com.squareup.okhttp3:okhttp:3.11.0'
+  implementation 'com.squareup.okhttp3:logging-interceptor:3.11.0'
+  implementation 'com.squareup.retrofit2:retrofit:2.4.0'
+  implementation 'com.squareup.retrofit2:converter-moshi:2.4.0'
+  implementation 'com.squareup.picasso:picasso:2.71828'
+  implementation 'com.twitter.sdk.android:twitter:3.3.0'
+  testImplementation 'junit:junit:4.12'
+  androidTestImplementation 'com.android.support.test:runner:1.0.2'
+  androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+}
