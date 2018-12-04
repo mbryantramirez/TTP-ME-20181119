@@ -1,4 +1,5 @@
 <resources>
   <string name="app_name">TTPTwitterBuild</string>
   <string name="iv_profile_pic_desc">twitter profile pictures</string>
+  <string name="groups">Groups</string>
 </resources>
