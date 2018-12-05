@@ -26,6 +26,7 @@ import nyc.pursuit.ttptwitterbuild.utils.GPSTracker;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 
+// Rusi notes
 public class MainActivity extends AppCompatActivity
     implements NavigationView.OnNavigationItemSelectedListener {
 
