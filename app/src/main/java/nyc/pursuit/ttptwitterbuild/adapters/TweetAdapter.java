@@ -15,14 +15,7 @@ import nyc.pursuit.ttptwitterbuild.R;
 
 public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetViewHolder> {
 
-  private List<Tweet> tweetList = new ArrayList<>();
-
-  public TweetAdapter() {
-  }
-
-  public void updateTweets(List<Tweet> tweetList) {
-    this.tweetList.addAll(tweetList);
-  }
+  private final List<Tweet> tweetList = new ArrayList<>();
 
   @NonNull @Override
   public TweetViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
@@ -39,15 +32,20 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.TweetViewHol
     tweetViewHolder.status.setText(tweet.text);
   }
 
+  public void updateTweets(List<Tweet> tweetList) {
+    this.tweetList.addAll(tweetList);
+  }
+
+  // tweetList can't be null. You initialized it.
   @Override public int getItemCount() {
-    return tweetList == null ? 0 : tweetList.size();
+    return tweetList.size();
   }
 
   public class TweetViewHolder extends RecyclerView.ViewHolder {
-    private ImageView profilePic;
-    private TextView screenName;
-    private TextView timeCreated;
-    private TextView status;
+    private final ImageView profilePic;
+    private final TextView screenName;
+    private final TextView timeCreated;
+    private final TextView status;
 
     public TweetViewHolder(@NonNull View itemView) {
       super(itemView);
