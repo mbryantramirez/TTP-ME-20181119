@@ -26,24 +26,56 @@ import nyc.pursuit.ttptwitterbuild.utils.GPSTracker;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 
-// Rusi notes
 public class MainActivity extends AppCompatActivity
     implements NavigationView.OnNavigationItemSelectedListener {
 
   private static final String TAG = "GPS";
+
+  // Why do you have public static objects?
   public static SearchService searchService;
   public static Double currentLat;
   public static Double currentLong;
-  private DrawerLayout drawerLayout;
+
+  private final DrawerLayout drawerLayout;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
+
     initDrawer();
     initTwitter();
     getGPSLocation();
     initFragment();
+  }
+
+  // Override methods should be at the top of the class, followed by public methods.
+  @Override public boolean onOptionsItemSelected(MenuItem item) {
+    switch (item.getItemId()) {
+      case android.R.id.home:
+        drawerLayout.openDrawer(GravityCompat.START);
+        return true;
+    }
+    return super.onOptionsItemSelected(item);
+  }
+
+  @Override public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+    selectDrawerItem(menuItem);
+    return true;
+  }
+
+  public static SearchService getTwitterSearchService() {
+    final TwitterSession activeSession = TwitterCore.getInstance()
+            .getSessionManager().getActiveSession();
+
+    final HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+    loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BASIC);
+    final OkHttpClient customClient = new OkHttpClient.Builder()
+            .addInterceptor(loggingInterceptor).build();
+
+    TwitterCore.getInstance().addGuestApiClient(new TwitterApiClient(customClient);
+
+    return TwitterCore.getInstance().getGuestApiClient().getSearchService();
   }
 
   private void initFragment() {
@@ -88,28 +120,6 @@ public class MainActivity extends AppCompatActivity
     }
   }
 
-  public static SearchService getTwitterSearchService() {
-    final TwitterSession activeSession = TwitterCore.getInstance()
-        .getSessionManager().getActiveSession();
-
-    final HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-    loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BASIC);
-    final OkHttpClient customClient = new OkHttpClient.Builder()
-        .addInterceptor(loggingInterceptor).build();
-
-    final TwitterApiClient customApiClient;
-
-    customApiClient = new TwitterApiClient(customClient);
-    TwitterCore.getInstance().addGuestApiClient(customApiClient);
-
-    return TwitterCore.getInstance().getGuestApiClient().getSearchService();
-  }
-
-  @Override public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-    selectDrawerItem(menuItem);
-    return true;
-  }
-
   private void selectDrawerItem(MenuItem menuItem) {
     Fragment fragment = null;
     Class fragmentClass;
@@ -118,7 +128,6 @@ public class MainActivity extends AppCompatActivity
     } else {
       fragmentClass = TimeLineFragment.class;
     }
-
     try {
       fragment = (Fragment) fragmentClass.newInstance();
     } catch (Exception e) {
@@ -128,18 +137,7 @@ public class MainActivity extends AppCompatActivity
     FragmentManager fragmentManager = getSupportFragmentManager();
     fragmentManager.beginTransaction().replace(R.id.container_main, fragment).commit();
 
-
-
     menuItem.setChecked(true);
     drawerLayout.closeDrawers();
-  }
-
-  @Override public boolean onOptionsItemSelected(MenuItem item) {
-    switch (item.getItemId()) {
-      case android.R.id.home:
-        drawerLayout.openDrawer(GravityCompat.START);
-        return true;
-    }
-    return super.onOptionsItemSelected(item);
   }
 }

@@ -15,20 +15,31 @@ import nyc.pursuit.ttptwitterbuild.R;
 import nyc.pursuit.ttptwitterbuild.adapters.HashTagGroupsAdapter;
 
 public class HashTagGroupsFragment extends Fragment {
+  // Always private and most likely final.
+  private final List<String> hashTagArray = new ArrayList<>();
+  private final RecyclerView groupRecyclerView;
+  private final HashTagGroupsAdapter hashTagGroupsAdapter;
 
-  private List<String> hashTagArray = new ArrayList<>();
-  RecyclerView groupRecyclerView;
-  HashTagGroupsAdapter hashTagGroupsAdapter;
+    /**
+     * You should never create new Fragments--always get a newInstance:
+     * https://stackoverflow.com/questions/9245408/best-practice-for-instantiating-a-new-android-fragment
+     */
+  public static HashTagGroupsFragment newInstance() {
+    return new HashTagGroupsFragment();
+  }
 
   @Nullable @Override
   public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
     View hashTagGroupsView = inflater.inflate(R.layout.fragment_hashtag_groups, container, false);
+
+      /**
+       * All this should be in onViewCreated.
+       */
     initGroupList();
+
     groupRecyclerView = hashTagGroupsView.findViewById(R.id.rv_groups);
-    LinearLayoutManager linearLayoutManager =
-        new LinearLayoutManager(getActivity());
-    groupRecyclerView.setLayoutManager(linearLayoutManager);
+    groupRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity());
     hashTagGroupsAdapter = new HashTagGroupsAdapter(hashTagArray);
     groupRecyclerView.setAdapter(hashTagGroupsAdapter);
 

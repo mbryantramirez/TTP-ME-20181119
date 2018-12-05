@@ -16,11 +16,11 @@ import android.util.Log;
 public class GPSTracker extends Service implements LocationListener {
 
   private final Context mContext;
-  boolean isGPSEnabled = false;
-  boolean canGetLocation = false;
-  Location location;
-  double latitude;
-  double longitude;
+  private boolean isGPSEnabled = false;
+  private boolean canGetLocation = false;
+  private Location location;
+  private double latitude;
+  private double longitude;
   private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10;
   private static final long MIN_TIME_BW_UPDATES = 1000 * 60;
   protected LocationManager locationManager;

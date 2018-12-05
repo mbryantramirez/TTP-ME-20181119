@@ -19,8 +19,10 @@ import nyc.pursuit.ttptwitterbuild.fragments.TimeLineFragment;
 public class HashTagGroupsAdapter
     extends RecyclerView.Adapter<HashTagGroupsAdapter.HashTagGroupsViewHolder> {
 
-  List<String> tagGroupList;
-  Context context;
+  private List<String> tagGroupList;
+
+  // Please don't ever pass context into non-Android classes.
+  private Context context;
 
   public HashTagGroupsAdapter(List<String> tagGroupList) {
     this.tagGroupList = tagGroupList;
@@ -38,6 +40,9 @@ public class HashTagGroupsAdapter
     return new HashTagGroupsViewHolder(view);
   }
 
+  /**
+   * If you want to do navigation, pass in a listener from your Activity/Fragment. That way you don't pass context into non-Android classes.
+   */
   @Override
   public void onBindViewHolder(@NonNull HashTagGroupsViewHolder hashTagGroupsViewHolder, int i) {
     hashTagGroupsViewHolder.textView.setText(tagGroupList.get(i));
@@ -69,10 +74,6 @@ public class HashTagGroupsAdapter
       super(itemView);
       textView = itemView.findViewById(R.id.tv_group_name);
       button = itemView.findViewById(R.id.button_group);
-    }
-
-    @Override public void onClick(View v) {
-
     }
   }
 }
